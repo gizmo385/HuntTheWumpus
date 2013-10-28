@@ -1,0 +1,13 @@
+package model;
+
+public class Room {
+	boolean hasPit;
+	boolean hasBlood;
+	boolean hasSlime;
+	boolean hasGoop;
+	boolean hasHunter;
+	boolean hasWumpus;
+	boolean isVisible;
+
+	
+}
