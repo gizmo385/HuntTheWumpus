@@ -1,9 +1,15 @@
 public class Map {
 	private Space[][] rooms;
 	private Hunter hunter;
+	
+	private final int ROWS;
+	private final int COLS;
 
 	public Map(int rows, int cols) {
-		rooms = new Space[10][10];
+		this.ROWS = rows;
+		this.COLS = cols;
+	
+		rooms = new Space[ROWS][COLS];
 		for (int r = 0; r < rooms.length; r++) {
 			for (int c = 0; c < rooms[0].length; c++) {
 				rooms[r][c] = new Space();
@@ -83,6 +89,29 @@ public class Map {
 	public void Move(Direction dir)
 	{
 		// TODO Write this code
+		
+		//Additions by Chris C.
+		//Calculate new location
+		int newX = this.hunter.getX() + dir.getDiffX();
+		int newY = this.hunter.getY() + dir.getDiffY();
+		
+		//Verify valid X location
+		if( newX >= this.COLS ) {
+			newX = 0;
+		}
+		
+		else if( newX < 0 ) {
+			newX = this.COLS;
+		}
+		
+		//Verify valid Y location
+		if( newY >= this.ROWS ) {
+			newY = 0;
+		}
+		
+		else if( newY < 0 ) {
+			newY = this.ROWS;
+		}
 	}
 	
 	public String toString() {
@@ -94,5 +123,27 @@ public class Map {
 			mapDisplay += System.getProperty("line.separator");
 		}
 		return mapDisplay;
+	}
+	
+	/**
+	 * The different directions possible for movement
+	 */
+	private Enum Direction {
+		UP(0, -1), DOWN(0, 1), RIGHT(1,0), LEFT(-1,0);
+		
+		private int diffX, diffY;
+		
+		private Direction( int diffX, int diffY ) {
+			this.diffX = diffX;
+			this.diffY = diffY;
+		}
+		
+		public int getDiffX() {
+			return this.diffX;
+		}
+		
+		public int getDiffY() {
+			return this.diffY;
+		}
 	}
 }
