@@ -2,7 +2,6 @@ package model;
 
 public class Map {
         private Room[][] rooms;
-        private Room room;
         private Hunter hunter;
         
         private final int ROWS;
