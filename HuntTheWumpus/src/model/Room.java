@@ -101,6 +101,6 @@ public class Room {
 		return false;
 	}
 	
-	private enum RoomCondinition
+	private enum RoomCondition
 
 }

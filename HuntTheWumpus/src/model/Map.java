@@ -1,5 +1,8 @@
+package model;
+
 public class Map {
         private Room[][] rooms;
+        private Room room;
         private Hunter hunter;
         
         private final int ROWS;
@@ -8,7 +11,7 @@ public class Map {
         public Map(int rows, int cols) {
                 this.ROWS = rows;
                 this.COLS = cols;
-        
+       
                 rooms = new Room[ROWS][COLS];
                 for (int r = 0; r < rooms.length; r++) {
                         for (int c = 0; c < rooms[0].length; c++) {
@@ -55,7 +58,7 @@ public class Map {
         private void placePit(int pitLocation) {
                 int pitX = pitLocation/COLS;
                 int pitY = pitLocation%COLS;
-                rooms[pitX][pitY].setCondition(Condtion.PIT);
+                rooms[pitX][pitY].setCondition(Condition.PIT);
                 rooms[Math.min(pitX + 1,COLS)][pitY].setCondition(Condition.SLIME);
                 rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.SLIME);
                 rooms[pitX][Math.min(pitY + 1,ROWS)].setCondition(Condition.SLIME);
@@ -72,7 +75,7 @@ public class Map {
         private void placeWumpus(int wumpusLocation) {
                 int pitX = wumpusLocation/COLS;
                 int pitY = wumpusLocation%COLS;
-                rooms[pitX][pitY].setCondition(Condtion.WUMPUS);
+                rooms[pitX][pitY].setCondition(Condition.WUMPUS);
                 rooms[Math.min(pitX + 1,COLS)][pitY].setCondition(Condition.BLOOD);
                 rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.BLOOD);
                 rooms[pitX][Math.min(pitY + 1,ROWS)].setCondition(Condition.BLOOD);
@@ -112,12 +115,49 @@ public class Map {
                 }
         }
         
+        /* written by Christopher Toepfer 
+         * 
+         * This function retrieves the coordinates of the hunter
+         * and fires an arrow given it's position from the hunter
+         * and travels until it hits a wall (edges of map)
+         */
+        private boolean fire(Direction dir) {
+        	int xCoord = hunter.getXCoordinate();
+        	int yCoord = hunter.getYCoordinate();
+        	
+        	switch(dir) {
+        	case UP:
+        		for(int i=yCoord; yCoord < COLS; i++) 
+        			if(rooms[xCoord][i].hasWumpus())
+        				return true;
+      
+        	case RIGHT:
+        		for(int i=xCoord; xCoord < ROWS; i++) 
+        			if(rooms[i][yCoord].hasWumpus())
+        				return true;
+        		
+        	case DOWN:
+        		for(int i=yCoord; yCoord > 0; i--) 
+        			if(rooms[xCoord][i].hasWumpus())
+        				return true;
+        		
+        	case LEFT:
+        		for(int i=xCoord; xCoord > 0; i--) 
+        			if(rooms[i][yCoord].hasWumpus())
+        				return true;
+        		
+			default:
+				return false;
+        	}
+        	
+        }
+        
         public String toString() {
                 String mapDisplay = "";
                 for (int r = 0; r < rooms.length; r++) {
                         for (int c = 0; c < rooms[0].length; c++) {
                                 if(c == hunter.getXCoordinate() && c == hunter.getYCoordinate())
-                                        mapDisplay += "[" + H + "] ";
+                                        mapDisplay += "[" + "H" + "] ";
                                 else
                                         mapDisplay += "[" + rooms[r][c].toString() + "] ";
                         }
