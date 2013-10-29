@@ -1,25 +1,30 @@
 import java.util.Scanner;
 
+import model.Direction;
+import model.Map;
+
 /**
  * Plays the game in a console view
  */
 public class Main {
 	
-	private Scanner scan = new Scanner( System.in );
-	private final String invalidMoveMessage = "Please enter a valid command (up, down, left, right, fire)";
-
+	static private Scanner scan = new Scanner( System.in );
+	static private final String invalidMoveMessage = "Please enter a valid command (up, down, left, right, fire)";
+	static private Map gameMap = new Map( 10, 10 );
+	
+	
 	public static void main( String[] args ) {
 		
 	
 		while( true ) {
-			Map gameMap = new Map( 10, 10 );
+			
 			
 			while( gameMap.playing() ) {
 				System.out.println( gameMap.toString() );
 				System.out.println();
 				
 				System.out.println( "Please select a move: up, down, left, right, fire, new, quit" );
-				String move = Scanner.nextLine();
+				String move = scan.nextLine();
 				
 				if( move.length() > 0 ) {
 					parseCommand( move );
@@ -36,20 +41,20 @@ public class Main {
 	/**
 	 * Parses user input the ensure that the move made by the user is valid
 	 */
-	private void parseCommand( String move ) {
+	private static void parseCommand( String move ) {
 		char moveCharacter = move.toLowerCase().trim().charAt(0);
 		
 		//If the user wants to fire
 		if( moveCharacter == 'f' ) {
 			System.out.println( "Please select a direction to fire your arrow (or quit to cancel): up, down, left, right" );
-			char directionSelection = Scanner.nextLine().trim().toLowerCase().charAt(0);
+			char directionSelection = scan.nextLine().trim().toLowerCase().charAt(0);
 			
 			//Make sure the input isn't to quit firing
 			if( directionSelection != 'q' ) {
 				Direction firingDirection = Direction.parseMovementDirection( directionSelection );
 				
 				if( firingDirection != null ) {
-					this.gameMap.fire( firingDirection );
+					gameMap.fire( firingDirection );
 				}
 				
 				else {
@@ -69,7 +74,7 @@ public class Main {
 		
 		//Reinitialize map
 		else if( moveCharacter == 'n' ) {
-			this.gameMap = new Map( 10, 10 );
+			gameMap = new Map( 10, 10 );
 			return;
 		}
 		
@@ -79,7 +84,7 @@ public class Main {
 			
 			//Ensure direction is valid
 			if( d != null ) {
-				this.gameMap.move( d );
+				gameMap.move( d );
 			}
 			
 			else {

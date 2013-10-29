@@ -5,3 +5,4 @@
 1382932691610	Encapsulate field 'hasHunter'
 1382932706238	Encapsulate field 'hasWumpus'
 1382932717372	Encapsulate field 'isVisible'
+1383088195830	Encapsulate field 'representation'
