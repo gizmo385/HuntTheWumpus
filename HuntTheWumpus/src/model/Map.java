@@ -53,8 +53,13 @@ public class Map {
          * mod the number of columns.
          */
         private void placePit(int pitLocation) {
-                // TODO Auto-generated method stub
-                
+                int pitX = pitLocation/COLS;
+                int pitY = pitLocation%COLS;
+                rooms[pitX][pitY].setCondition(Condtion.PIT);
+                rooms[Math.min(pitX + 1,COLS)][pitY].setCondition(Condition.SLIME);
+                rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.SLIME);
+                rooms[pitX][Math.min(pitY + 1,ROWS)].setCondition(Condition.SLIME);
+                rooms[pitX][Math.max(pitY - 1, 0)].setCondition(Condition.SLIME);
         }
 
         /*
@@ -65,20 +70,13 @@ public class Map {
          * mod the number of columns.
          */
         private void placeWumpus(int wumpusLocation) {
-                // TODO Auto-generated method stub
-                
-        }
-
-        
-        /*
-         * This method will place the hunter at the given location.
-         * The row value is the location divided by the number
-         * of columns, and the col value is the location
-         * mod the number of columns.
-         */
-        private void placeHunter(int hunterLocation) {
-                // TODO Auto-generated method stub
-                
+                int pitX = wumpusLocation/COLS;
+                int pitY = wumpusLocation%COLS;
+                rooms[pitX][pitY].setCondition(Condtion.WUMPUS);
+                rooms[Math.min(pitX + 1,COLS)][pitY].setCondition(Condition.BLOOD);
+                rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.BLOOD);
+                rooms[pitX][Math.min(pitY + 1,ROWS)].setCondition(Condition.BLOOD);
+                rooms[pitX][Math.max(pitY - 1, 0)].setCondition(Condition.BLOOD);
         }
 
         /*
@@ -118,15 +116,15 @@ public class Map {
                 String mapDisplay = "";
                 for (int r = 0; r < rooms.length; r++) {
                         for (int c = 0; c < rooms[0].length; c++) {
-                                mapDisplay += "[" + rooms[r][c].toString() + "] ";
+                                if(c == hunter.getXCoordinate() && c == hunter.getYCoordinate())
+                                        mapDisplay += "[" + H + "] ";
+                                else
+                                        mapDisplay += "[" + rooms[r][c].toString() + "] ";
                         }
                         mapDisplay += System.getProperty("line.separator");
                 }
                 return mapDisplay;
         }
         
-        /**
-         * The different directions possible for movement
-         */
         
 }
