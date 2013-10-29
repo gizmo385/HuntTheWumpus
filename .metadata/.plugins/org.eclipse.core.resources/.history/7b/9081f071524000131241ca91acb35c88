@@ -8,7 +8,7 @@ public class Hunter {
 	private boolean hasArrow;
 	
 
-	Hunter(int xCoord, int yCoord) {
+	Hunter(Direction hunterDirection, int xCoord, int yCoord) {
 		this.hunterDirection = hunterDirection;
 		this.xCoordinate = xCoord;
 		this.yCoordinate = yCoord;

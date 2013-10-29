@@ -36,9 +36,6 @@ public class Room {
 	 */
 	public void setBlood(boolean hasBlood) {
 		this.hasBlood = hasBlood;
-		if(hasBlood()){
-			setGoop(true);
-		}
 	}
 	/**
 	 * @return the hasSlime
@@ -51,13 +48,18 @@ public class Room {
 	 */
 	public void setSlime(boolean hasSlime) {
 		this.hasSlime = hasSlime;
-		
 	}
 	/**
 	 * @return the hasGoop
 	 */
 	public boolean hasGoop() {
 		return hasGoop;
+	}
+	/**
+	 * @param hasGoop the hasGoop to set
+	 */
+	public void setGoop(boolean hasGoop) {
+		this.hasGoop = hasGoop;
 	}
 	/**
 	 * @return the hasHunter
@@ -95,12 +97,5 @@ public class Room {
 	public void setVisible(boolean isVisible) {
 		this.isVisible = isVisible;
 	}
-	
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	private enum RoomCondinition
 
 }
