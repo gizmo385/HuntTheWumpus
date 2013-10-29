@@ -17,4 +17,29 @@ public enum Direction {
                 public int getDiffY() {
                         return this.diffY;
                 }
+                
+                /**
+                 * Parses a movement direction to get the associated Direction constant
+                 */
+                public static Direction parseMovementDirection( char c ) {
+                        c = Character.toLowerCase(c);
+                        
+                        if( c == 'u' ) {
+                            return UP;
+                        }
+                        
+                        else if( c == 'd' ) {
+                            return DOWN;
+                        }
+                        
+                        else if( c == 'l' ) {
+                            return LEFT;
+                        }
+                        
+                        else if( c == 'r' ) {
+                            return RIGHT;
+                        }
+                        
+                        return null;
+                }
         }
