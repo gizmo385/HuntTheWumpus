@@ -1,19 +1,18 @@
-
 public class Hunter {
 	
-	private Directions hunterDirection;
+	private Direction hunterDirection;
 	private int xCoordinate;
 	private int yCoordinate;
 	private boolean hasArrow;
 	
 
-	Hunter(Directions hunterDirection, int xCoord, int yCoord) {
+	Hunter(Direction hunterDirection, int xCoord, int yCoord) {
 		this.hunterDirection = hunterDirection;
 		this.xCoordinate = xCoord;
 		this.yCoordinate = yCoord;
 		this.hasArrow = true;
 	}
-	private void setNewHunterDirection(Directions hunterDirection) {
+	private void setNewHunterDirection(Direction hunterDirection) {
 		this.hunterDirection = hunterDirection;
 	}
 	
@@ -29,7 +28,7 @@ public class Hunter {
 		return hasArrow;
 	}
 	
-	public Directions getHunterDirection() {
+	public Direction getHunterDirection() {
 		return hunterDirection;
 	}
 	
