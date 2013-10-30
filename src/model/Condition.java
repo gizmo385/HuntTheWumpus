@@ -3,10 +3,10 @@ package model;
 public enum Condition {
 
 	BLOOD('B', "There is blood on the ground."), 
-	SLIME('B', "The ground is covered in green slime."),
-	GOOP('B', "There is some kind of goopy substance on the ground."),
-	PIT('B', "You fell into a pit and died."),
-	WUMPUS('B', "The wumpus ate you."), 
+	SLIME('S', "The ground is covered in green slime."),
+	GOOP('G', "There is some kind of goopy substance on the ground."),
+	PIT('P', "You fell into a pit and died."),
+	WUMPUS('W', "The wumpus ate you."), 
 	EMPTY(' ', "This room appears to be empty.");
 	
 	private char representation;
