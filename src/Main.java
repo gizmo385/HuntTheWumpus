@@ -39,7 +39,7 @@ public class Main {
 			System.out.println( gameMap.getStatus() );
 			System.out.println( "Play again? (Y/N)" );
 			String playAgain = scan.nextLine();
-			if( playAgain.charAt(0) != 'Y')
+			if( playAgain.charAt(0) != 'Y' || playAgain.charAt(0) != 'y')
 				return;
 			else
 				gameMap = new Map(10, 10);
