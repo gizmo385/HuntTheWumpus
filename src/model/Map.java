@@ -165,22 +165,22 @@ public class Map {
 		int yCoord = hunter.getYCoordinate();
 
 		switch(dir) {
-		case UP:
+		case RIGHT:
 			for(int i=yCoord; i < COLS; i++) 
 				if(rooms[xCoord][i].hasWumpus())
 					return true;
 
-		case RIGHT:
+		case DOWN:
 			for(int i=xCoord; i < ROWS; i++) 
 				if(rooms[i][yCoord].hasWumpus())
 					return true;
 
-		case DOWN:
+		case LEFT:
 			for(int i=yCoord; i > 0; i--) 
 				if(rooms[xCoord][i].hasWumpus())
 					return true;
 
-		case LEFT:
+		case UP:
 			for(int i=xCoord; i > 0; i--) 
 				if(rooms[i][yCoord].hasWumpus())
 					return true;
