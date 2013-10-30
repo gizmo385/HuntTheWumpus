@@ -6,6 +6,12 @@ public class Room {
 
 	private Condition condition;
 
+	public Room()
+	{
+		isVisible = false;
+		condition = Condition.EMPTY;
+	}
+	
 	/**
 	 * @return the isVisible
 	 */
@@ -45,8 +51,12 @@ public class Room {
 	}
 	
 	public String toString(){
+		
+		if(!isVisible)
+			return "[X]";
 		return "[" + condition.getRepresentation() + "]";
 		
 	}
 
 }
+
