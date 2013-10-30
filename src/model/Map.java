@@ -61,9 +61,9 @@ public class Map {
 		int pitX = pitLocation/COLS;
 		int pitY = pitLocation%COLS;
 		rooms[pitX][pitY].setCondition(Condition.PIT);
-		rooms[Math.min(pitX + 1,COLS)][pitY].setCondition(Condition.SLIME);
+		rooms[Math.min(pitX + 1,COLS - 1)][pitY].setCondition(Condition.SLIME);
 		rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.SLIME);
-		rooms[pitX][Math.min(pitY + 1,ROWS)].setCondition(Condition.SLIME);
+		rooms[pitX][Math.min(pitY + 1,ROWS - 1)].setCondition(Condition.SLIME);
 		rooms[pitX][Math.max(pitY - 1, 0)].setCondition(Condition.SLIME);
 	}
 
@@ -78,9 +78,9 @@ public class Map {
 		int pitX = wumpusLocation/COLS;
 		int pitY = wumpusLocation%COLS;
 		rooms[pitX][pitY].setCondition(Condition.WUMPUS);
-		rooms[Math.min(pitX + 1,COLS)][pitY].setCondition(Condition.BLOOD);
+		rooms[Math.min(pitX + 1,COLS - 1)][pitY].setCondition(Condition.BLOOD);
 		rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.BLOOD);
-		rooms[pitX][Math.min(pitY + 1,ROWS)].setCondition(Condition.BLOOD);
+		rooms[pitX][Math.min(pitY + 1,ROWS - 1)].setCondition(Condition.BLOOD);
 		rooms[pitX][Math.max(pitY - 1, 0)].setCondition(Condition.BLOOD);
 	}
 
@@ -117,6 +117,7 @@ public class Map {
 		
 		hunter.setXCoordinate(newX);
 		hunter.setYCoordinate(newY);
+		rooms[newX][newY].setVisible(true);
 		hunterStatus = rooms[newX][newY].getCondition().getStatus();
 		if (rooms[newX][newY].getCondition() == Condition.WUMPUS || rooms[newX][newY].getCondition() == Condition.PIT)
 			isPlaying = false;
