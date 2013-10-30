@@ -40,10 +40,13 @@ public class Map {
 		 while(true)
 		 {        
 			 int hunterLocation = (int) (Math.random() * rows * cols);
-			 if(rooms[hunterLocation/cols][hunterLocation%cols].isEmpty())
+			 int hunterRow = hunterLocation/cols;
+			 int hunterCol = hunterLocation/rows;
+			 if(rooms[hunterRow][hunterCol].isEmpty())
 			 {
-				 hunter = new Hunter(hunterLocation/cols,hunterLocation%cols);
-				 hunterStatus = rooms[hunterLocation/cols][hunterLocation%cols].getCondition().getStatus();
+				 hunter = new Hunter(hunterRow,hunterCol);
+				 hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
+				 rooms[hunterRow][hunterCol].setVisible(true);
 				 break;
 			 }        
 		 }
@@ -61,10 +64,10 @@ public class Map {
 		int pitX = pitLocation/COLS;
 		int pitY = pitLocation%COLS;
 		rooms[pitX][pitY].setCondition(Condition.PIT);
-		rooms[Math.min(pitX + 1,COLS - 1)][pitY].setCondition(Condition.SLIME);
-		rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.SLIME);
-		rooms[pitX][Math.min(pitY + 1,ROWS - 1)].setCondition(Condition.SLIME);
-		rooms[pitX][Math.max(pitY - 1, 0)].setCondition(Condition.SLIME);
+		rooms[(pitX + 1) % ROWS][pitY].setCondition(Condition.SLIME);
+		rooms[(pitX + ROWS - 1) % ROWS][pitY].setCondition(Condition.SLIME);
+		rooms[pitX][(pitY + 1) % COLS].setCondition(Condition.SLIME);
+		rooms[pitX][(pitY + COLS - 1) % COLS].setCondition(Condition.SLIME);
 	}
 
 	/*
@@ -78,10 +81,10 @@ public class Map {
 		int pitX = wumpusLocation/COLS;
 		int pitY = wumpusLocation%COLS;
 		rooms[pitX][pitY].setCondition(Condition.WUMPUS);
-		rooms[Math.min(pitX + 1,COLS - 1)][pitY].setCondition(Condition.BLOOD);
-		rooms[Math.max(pitX - 1, 0)][pitY].setCondition(Condition.BLOOD);
-		rooms[pitX][Math.min(pitY + 1,ROWS - 1)].setCondition(Condition.BLOOD);
-		rooms[pitX][Math.max(pitY - 1, 0)].setCondition(Condition.BLOOD);
+		rooms[(pitX + 1) % ROWS][pitY].setCondition(Condition.BLOOD);
+		rooms[(pitX + ROWS - 1) % ROWS][pitY].setCondition(Condition.BLOOD);
+		rooms[pitX][(pitY + 1) % COLS].setCondition(Condition.BLOOD);
+		rooms[pitX][(pitY + COLS - 1) % COLS].setCondition(Condition.BLOOD);
 	}
 
 	/*
@@ -103,7 +106,7 @@ public class Map {
 		}
 
 		else if( newX < 0 ) {
-			newX = this.COLS;
+			newX = this.COLS - 1;
 		}
 
 		//Verify valid Y location
@@ -112,7 +115,7 @@ public class Map {
 		}
 
 		else if( newY < 0 ) {
-			newY = this.ROWS;
+			newY = this.ROWS - 1;
 		}
 		
 		hunter.setXCoordinate(newX);
@@ -120,10 +123,20 @@ public class Map {
 		rooms[newX][newY].setVisible(true);
 		hunterStatus = rooms[newX][newY].getCondition().getStatus();
 		if (rooms[newX][newY].getCondition() == Condition.WUMPUS || rooms[newX][newY].getCondition() == Condition.PIT)
+		{	
 			isPlaying = false;
+			setMapToVisible();
+		}
 	}
 	
 	
+	private void setMapToVisible() {
+		for(Room[] row : rooms)
+			for(Room room: row)
+				room.setVisible(true);
+	}
+
+
 	/*
 	 * written by Jimmy
 	 * 
@@ -138,6 +151,7 @@ public class Map {
 		else
 			hunterStatus = "You missed with your one and only arrow and the Wumpus heard you. You were eaten.";
 		isPlaying = false;
+		setMapToVisible();
 	}
 
 	/* written by Christopher Toepfer 
@@ -152,22 +166,22 @@ public class Map {
 
 		switch(dir) {
 		case UP:
-			for(int i=yCoord; yCoord < COLS; i++) 
+			for(int i=yCoord; i < COLS; i++) 
 				if(rooms[xCoord][i].hasWumpus())
 					return true;
 
 		case RIGHT:
-			for(int i=xCoord; xCoord < ROWS; i++) 
+			for(int i=xCoord; i < ROWS; i++) 
 				if(rooms[i][yCoord].hasWumpus())
 					return true;
 
 		case DOWN:
-			for(int i=yCoord; yCoord > 0; i--) 
+			for(int i=yCoord; i > 0; i--) 
 				if(rooms[xCoord][i].hasWumpus())
 					return true;
 
 		case LEFT:
-			for(int i=xCoord; xCoord > 0; i--) 
+			for(int i=xCoord; i > 0; i--) 
 				if(rooms[i][yCoord].hasWumpus())
 					return true;
 
@@ -192,7 +206,7 @@ public class Map {
 		
 		for (int r = 0; r < rooms.length; r++) {
 			for (int c = 0; c < rooms[0].length; c++) {
-				if(c == hunter.getXCoordinate() && c == hunter.getYCoordinate())
+				if(r == hunter.getXCoordinate() && c == hunter.getYCoordinate())
 					sb.append( "[O]" );
 				else
 					sb.append( rooms[r][c].toString() );
