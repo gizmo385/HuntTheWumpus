@@ -1,3 +1,4 @@
+
 import java.util.Scanner;
 
 import model.Direction;
@@ -33,8 +34,16 @@ public class Main {
 					System.out.println( invalidMoveMessage );
 				}
 			}
-			
-			//TODO: Handle end of game (when playing() == false)
+			System.out.println( gameMap.toString() );
+			System.out.println();
+			System.out.println( gameMap.getStatus() );
+			System.out.println( "Play again? (Y/N)" );
+			String playAgain = scan.nextLine();
+			if( playAgain.charAt(0) != 'Y')
+				return;
+			else
+				gameMap = new Map(10, 10);
+			//TODO: Clean this up
 		}
 	}
 	
