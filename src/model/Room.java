@@ -49,6 +49,9 @@ public class Room {
 	 * @param condition The new condition to set
 	 */
 	public void setCondition(Condition condition) {
+		//If already wumpus or pit, don't change
+		if(this.condition == Condition.PIT || this.condition == Condition.WUMPUS)
+			return;
 		//Check to see if the room is going to have blood AND slime, which yields goop
 		if (this.condition == Condition.BLOOD && condition == Condition.SLIME) {
 			this.condition = Condition.GOOP;
