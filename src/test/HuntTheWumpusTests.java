@@ -39,4 +39,39 @@ public class HuntTheWumpusTests {
 		assertEquals( 'B', Condition.BLOOD.getRepresentation() );
 		assertEquals( "The wumpus ate you.", Condition.WUMPUS.getStatus() );
 	}
+	
+	/**
+	 * A few tests using non-random maps to check for accurate status messages,
+	 * test for when pit and wumpus are adjacent to each other, and to test
+	 * wraparound for the hunter.
+	 */
+	@Test public void testRoomSets()
+	{
+		Map testMap = new Map(10, 10, 14, 4, 24);
+		assertEquals(testMap.getStatus(), Condition.BLOOD.getStatus());
+		testMap.fireArrow(Direction.UP);
+		assertFalse(testMap.playing());
+		assertEquals(testMap.getStatus(), "You killed the Wumpus! You are a true hero!");
+		
+		testMap = new Map(10, 10, 14, 3, 4);
+		assertEquals(testMap.getStatus(), Condition.GOOP.getStatus());
+		assertTrue(testMap.playing());
+		testMap.move(Direction.LEFT);
+		assertEquals(testMap.getStatus(), Condition.PIT.getStatus());
+		assertFalse(testMap.playing());
+		
+		testMap = new Map(10, 10, 14, 3, 4);
+		assertEquals(testMap.getStatus(), Condition.GOOP.getStatus());
+		assertTrue(testMap.playing());
+		testMap.move(Direction.DOWN);
+		assertEquals(testMap.getStatus(), Condition.WUMPUS.getStatus());
+		assertFalse(testMap.playing());
+		
+		testMap = new Map(10, 10, 3, 5, 94);
+		assertEquals(testMap.getStatus(), Condition.EMPTY.getStatus());
+		assertTrue(testMap.playing());
+		testMap.move(Direction.DOWN);
+		assertEquals(testMap.getStatus(), Condition.GOOP.getStatus());
+		assertTrue(testMap.playing());
+	}
 }
