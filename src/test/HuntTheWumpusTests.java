@@ -5,6 +5,15 @@ import model.Condition;
 import model.Direction;
 
 import org.junit.Test;
+/**
+ * Some test for simple testing of the program in addition to 
+ * testing while playing
+ * 
+ * @author Christopher Chapline
+ * @author Christopher Toepfer
+ * @author David Christy
+ * @author James Fagan
+ */
 
 public class HuntTheWumpusTests {
 
