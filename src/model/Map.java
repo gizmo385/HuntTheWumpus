@@ -169,26 +169,30 @@ public class Map {
 			for(int i=yCoord; i < COLS; i++) 
 				if(rooms[xCoord][i].hasWumpus())
 					return true;
+			break;
 
 		case DOWN:
 			for(int i=xCoord; i < ROWS; i++) 
 				if(rooms[i][yCoord].hasWumpus())
 					return true;
+			break;
 
 		case LEFT:
 			for(int i=yCoord; i > 0; i--) 
 				if(rooms[xCoord][i].hasWumpus())
 					return true;
+			break;
 
 		case UP:
 			for(int i=xCoord; i > 0; i--) 
 				if(rooms[i][yCoord].hasWumpus())
 					return true;
+			break;
 
 		default:
-			return false;
+			break;
 		}
-
+		return false;
 	}
 
 	/*
