@@ -1,5 +1,13 @@
 package model;
 
+/**
+ * Manages info about the game board
+ * 
+ * @author Christopher Chapline
+ * @author Christopher Toepfer
+ * @author David Christy
+ * @author James Fagan
+ */
 public class Map {
 	private Room[][] rooms;
 	private Hunter hunter;
@@ -9,6 +17,12 @@ public class Map {
 	private final int ROWS;
 	private final int COLS;
 
+	/**
+	 * Creates a map of a certain size, places a wumpus and pit in random 
+	 * locations, and then places the player in a safe square
+	 * @param rows The number of rows on the map
+	 * @param cols The number of columns on the map
+	 */
 	public Map(int rows, int cols) {
 		isPlaying = true;
 		this.ROWS = rows;
@@ -37,6 +51,7 @@ public class Map {
 		 this.placeWumpus(wumpusLocation);
 		 this.placePit(pitLocation);
 
+		 //Place the hunter in a safe location
 		 while(true)
 		 {        
 			 int hunterLocation = (int) (Math.random() * rows * cols);
@@ -53,49 +68,63 @@ public class Map {
 	}
 
 
-	/*
+	/**
 	 * This method will place the pit at the given location.
 	 * It will also put slime in the adjacent rooms.
 	 * The row value is the location divided by the number
 	 * of columns, and the col value is the location
 	 * mod the number of columns.
+	 * 
+	 * @param The location of the pit to place
 	 */
 	private void placePit(int pitLocation) {
+		//Get absolute location
 		int pitX = pitLocation/COLS;
 		int pitY = pitLocation%COLS;
+		
+		//Places the pit
 		rooms[pitX][pitY].setCondition(Condition.PIT);
+		
+		//Places slime in the adjacent pits
 		rooms[(pitX + 1) % ROWS][pitY].setCondition(Condition.SLIME);
 		rooms[(pitX + ROWS - 1) % ROWS][pitY].setCondition(Condition.SLIME);
 		rooms[pitX][(pitY + 1) % COLS].setCondition(Condition.SLIME);
 		rooms[pitX][(pitY + COLS - 1) % COLS].setCondition(Condition.SLIME);
 	}
 
-	/*
+	/**
 	 * This method will place the wumpus at the given location.
 	 * It will also put blood in the adjacent rooms.
 	 * The row value is the location divided by the number
 	 * of columns, and the col value is the location
 	 * mod the number of columns.
+	 * 
+	 * @param The location of the wumpus to place
 	 */
 	private void placeWumpus(int wumpusLocation) {
+		//Get absolute location
 		int pitX = wumpusLocation/COLS;
 		int pitY = wumpusLocation%COLS;
+		
+		//Places Wumpus
 		rooms[pitX][pitY].setCondition(Condition.WUMPUS);
+		
+		//Place blood in adjacent rooms
 		rooms[(pitX + 1) % ROWS][pitY].setCondition(Condition.BLOOD);
 		rooms[(pitX + ROWS - 1) % ROWS][pitY].setCondition(Condition.BLOOD);
 		rooms[pitX][(pitY + 1) % COLS].setCondition(Condition.BLOOD);
 		rooms[pitX][(pitY + COLS - 1) % COLS].setCondition(Condition.BLOOD);
 	}
 
-	/*
+	/**
 	 * Depending on the value of dir, this method
 	 * moves the hunter to a room adjacent to its current
 	 * room. It updates the Hunter object as well.
+	 * 
+	 * @param dir The direction for the player to move in
 	 */
 	public void move(Direction dir)
 	{
-
-		//Additions by Chris C.
 		//Calculate new location
 		int newX = this.hunter.getXCoordinate() + dir.getDiffX();
 		int newY = this.hunter.getYCoordinate() + dir.getDiffY();
@@ -118,6 +147,7 @@ public class Map {
 			newY = this.ROWS - 1;
 		}
 		
+		//Move the hunter
 		hunter.setXCoordinate(newX);
 		hunter.setYCoordinate(newY);
 		rooms[newX][newY].setVisible(true);
@@ -129,7 +159,9 @@ public class Map {
 		}
 	}
 	
-	
+	/**
+	 * Sets all rooms in the map to visible
+	 */
 	private void setMapToVisible() {
 		for(Room[] row : rooms)
 			for(Room room: row)
@@ -137,11 +169,11 @@ public class Map {
 	}
 
 
-	/*
-	 * written by Jimmy
+	/**
+	 * Fires an arrow in the specified direction
 	 * 
-	 * I thought a public version of fire arrow that uses the fire method written by
-	 * Chris T. would be helpful. I made his version private.
+	 * @param dir The direction to fire in 
+	 * @see #fire(Direction)
 	 */
 	public void fireArrow(Direction dir)
 	{
@@ -154,11 +186,14 @@ public class Map {
 		setMapToVisible();
 	}
 
-	/* written by Christopher Toepfer 
+	/** 
 	 * 
 	 * This function retrieves the coordinates of the hunter
 	 * and fires an arrow given it's position from the hunter
 	 * and travels until it hits a wall (edges of map)
+	 * 
+	 * @param dir The direction to fire in
+	 * @return Returns true if the wumpus was killed, false otherwise.
 	 */
 	private boolean fire(Direction dir) {
 		int xCoord = hunter.getXCoordinate();
@@ -195,7 +230,7 @@ public class Map {
 		return false;
 	}
 
-	/*
+	/**
 	 * Returns the status of the hunter, which is a description of
 	 * the hunter's current situation.
 	 */
@@ -203,7 +238,10 @@ public class Map {
 	{
 		return hunterStatus;
 	}
-
+	
+	/**
+	 * Returns a string representation of map
+	 */
 	public String toString() {
 		String lineSep = System.lineSeparator();
 		StringBuilder sb = new StringBuilder();
