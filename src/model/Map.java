@@ -41,7 +41,7 @@ public class Map {
 		 {        
 			 int hunterLocation = (int) (Math.random() * rows * cols);
 			 int hunterRow = hunterLocation/cols;
-			 int hunterCol = hunterLocation/rows;
+			 int hunterCol = hunterLocation%cols;
 			 if(rooms[hunterRow][hunterCol].isEmpty())
 			 {
 				 hunter = new Hunter(hunterRow,hunterCol);

@@ -37,13 +37,29 @@ public class Main {
 			System.out.println( gameMap.toString() );
 			System.out.println();
 			System.out.println( gameMap.getStatus() );
-			System.out.println( "Play again? (Y/N)" );
-			String playAgain = scan.nextLine();
-			if( playAgain.charAt(0) != 'Y' || playAgain.charAt(0) != 'y')
-				return;
-			else
-				gameMap = new Map(10, 10);
-			//TODO: Clean this up
+			
+			startNewGame();
+		}
+	}
+	
+	private static void startNewGame() {
+		System.out.println( "Play again? (Y/N)" );
+		String playAgain = scan.nextLine().trim().toLowerCase();
+			
+		if( playAgain.length() > 0 ) {
+			char answer = playAgain.charAt(0);
+				
+			switch( answer ) {
+				case 'y':
+					gameMap = new Map( 10, 10 );
+					break;
+				case 'n':
+					System.exit(0);
+				default:
+					System.out.println( "Please enter a valid answer! (Y/N)" );
+					startNewGame();
+					break;
+			}
 		}
 	}
 	
