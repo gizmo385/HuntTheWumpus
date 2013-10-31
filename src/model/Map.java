@@ -66,6 +66,40 @@ public class Map {
 			 }        
 		 }
 	}
+	
+	/**
+	 * Creates a map of a certain size, places a wumpus, a pit,
+	 * and a hunter in specified locations.
+	 * @param rows The number of rows on the map
+	 * @param cols The number of columns on the map
+	 * @param wumpusLoc location of wumpus
+	 * @param pitLoc location of pit
+	 * @param hunterLoc location of hunter
+	 */
+	public Map(int rows, int cols, int wumpusLoc, int pitLoc,int hunterLoc) 
+	{
+		isPlaying = true;
+		this.ROWS = rows;
+		this.COLS = cols;
+
+		rooms = new Room[ROWS][COLS];
+		for (int r = 0; r < rooms.length; r++) {
+			for (int c = 0; c < rooms[0].length; c++) {
+				rooms[r][c] = new Room();
+			}
+		}
+
+		this.placeWumpus(wumpusLoc);
+		this.placePit(pitLoc);
+
+		int hunterRow = hunterLoc/cols;
+		int hunterCol = hunterLoc%cols;
+		hunter = new Hunter(hunterRow,hunterCol);
+		hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
+		rooms[hunterRow][hunterCol].setVisible(true);
+		      
+		
+	}
 
 
 	/**
