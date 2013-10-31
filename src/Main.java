@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 
 import model.Direction;
@@ -63,6 +62,7 @@ public class Main {
 					gameMap = new Map( 10, 10 );
 					break;
 				case 'n':
+					System.out.println("Goodbye!");
 					System.exit(0);
 				default:
 					System.out.println( "Please enter a valid answer! (Y/N)" );
@@ -103,6 +103,7 @@ public class Main {
 		
 		//User wants to quit, exit console
 		else if( moveCharacter == 'q' ) {
+			System.out.println("Goodbye!");
 			System.exit(0);
 		}
 		
