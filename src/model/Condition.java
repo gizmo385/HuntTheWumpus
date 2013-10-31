@@ -1,5 +1,13 @@
 package model;
 
+/**
+ * Used to represent room conditions
+ * 
+ * @author Christopher Chapline
+ * @author Christopher Toepfer
+ * @author David Christy
+ * @author James Fagan
+ */
 public enum Condition {
 
 	BLOOD('B', "There is blood on the ground."), 

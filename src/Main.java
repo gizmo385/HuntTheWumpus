@@ -6,23 +6,22 @@ import model.Map;
 
 /**
  * Plays the game in a console view
+ * 
+ * @author Christopher Chapline
+ * @author Christopher Toepfer
+ * @author David Christy
+ * @author James Fagan
  */
 public class Main {
 	
 	static private Scanner scan = new Scanner( System.in );
 	static private final String invalidMoveMessage = "Please enter a valid command (up, down, left, right, fire)";
 	static private Map gameMap = new Map( 10, 10 );
-	
-	
+
 	public static void main( String[] args ) {
-		
-	
 		while( true ) {
-			
-			
 			while( gameMap.playing() ) {
-				System.out.println( gameMap.toString() );
-				System.out.println();
+				printGameStatus();
 				
 				System.out.println( "Please select a move: up, down, left, right, fire, new, quit" );
 				String move = scan.nextLine();
@@ -34,14 +33,24 @@ public class Main {
 					System.out.println( invalidMoveMessage );
 				}
 			}
-			System.out.println( gameMap.toString() );
-			System.out.println();
-			System.out.println( gameMap.getStatus() );
+			printGameStatus();
 			
 			startNewGame();
 		}
 	}
 	
+	/**
+	 * Prints the map and game status
+	 */
+	private static void printGameStatus() {
+		System.out.println( gameMap.toString() );
+		System.out.println( gameMap.getStatus() );
+		System.out.println();
+	}
+	
+	/**
+	 * Asks the user if they want to start a new game
+	 */
 	private static void startNewGame() {
 		System.out.println( "Play again? (Y/N)" );
 		String playAgain = scan.nextLine().trim().toLowerCase();
