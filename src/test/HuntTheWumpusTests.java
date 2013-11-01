@@ -3,6 +3,7 @@ package test;
 import static org.junit.Assert.*;
 import model.Condition;
 import model.Direction;
+import model.Map;
 
 import org.junit.Test;
 /**
