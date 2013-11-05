@@ -22,7 +22,6 @@ public class Hunter {
 	 * @param yCoord The hunter's y-coordinate
 	 */
 	Hunter(int xCoord, int yCoord) {
-		this.hunterDirection = hunterDirection;
 		this.xCoordinate = xCoord;
 		this.yCoordinate = yCoord;
 		this.hasArrow = true;

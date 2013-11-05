@@ -10,7 +10,7 @@ package model;
  */
 public class Room {
 
-	private boolean isVisible;
+	private boolean isVisible, hasHunter;
 
 	private Condition condition;
 
@@ -88,6 +88,14 @@ public class Room {
 			return "[X]";
 		return "[" + condition.getRepresentation() + "]";
 		
+	}
+	
+	public boolean hasHunter() {
+		return this.hasHunter;
+	}
+	
+	public void setHasHunter( boolean hasHunter ) {
+		this.hasHunter = hasHunter;
 	}
 
 }
