@@ -1,7 +1,10 @@
 package model;
 
+<<<<<<< HEAD
+=======
 import java.awt.Point;
 
+>>>>>>> GUI Stuff
 /**
  * Manages info about the game board
  * 
@@ -26,6 +29,9 @@ public class Map {
 	 * @param rows The number of rows on the map
 	 * @param cols The number of columns on the map
 	 */
+<<<<<<< HEAD
+	public Map(int rows, int cols) {
+=======
 	public Map( GenerationStrategy strategy ) {
 		//Set gameplay variables
 		isPlaying = true;
@@ -95,12 +101,80 @@ public class Map {
 	 */
 	public Map(int rows, int cols, int wumpusLoc, int pitLoc,int hunterLoc) 
 	{
+>>>>>>> GUI Stuff
 		isPlaying = true;
 		this.ROWS = rows;
 		this.COLS = cols;
 		this.bloodSpread = 1;
 		this.slimeSpread = 1;
 		this.numberOfPits = 1;
+
+		rooms = new Room[ROWS][COLS];
+		for (int r = 0; r < rooms.length; r++) {
+			for (int c = 0; c < rooms[0].length; c++) {
+				rooms[r][c] = new Room();
+			}
+		}
+
+<<<<<<< HEAD
+		int wumpusLocation = 0;
+		int pitLocation = 0;
+		/*
+		 * This while loop generates random locations for the 
+		 * wumpus, and pit. If the random values repeat,
+		 * it tries again.
+		 */
+		 while (wumpusLocation == pitLocation)
+		 {
+			 wumpusLocation = (int) (Math.random() * rows * cols);
+			 pitLocation = (int) (Math.random() * rows * cols);
+		 }
+
+		 this.placeWumpus(wumpusLocation);
+		 this.placePit(pitLocation);
+
+		 //Place the hunter in a safe location
+		 while(true)
+		 {        
+			 int hunterLocation = (int) (Math.random() * rows * cols);
+			 int hunterRow = hunterLocation/cols;
+			 int hunterCol = hunterLocation%cols;
+			 if(rooms[hunterRow][hunterCol].isEmpty())
+			 {
+				 hunter = new Hunter(hunterRow,hunterCol);
+				 hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
+				 rooms[hunterRow][hunterCol].setVisible(true);
+				 break;
+			 }        
+		 }
+=======
+		this.placeWumpus(wumpusLoc);
+		this.placePit(pitLoc);
+
+		int hunterRow = hunterLoc/cols;
+		int hunterCol = hunterLoc%cols;
+		hunter = new Hunter(hunterRow,hunterCol);
+		hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
+		rooms[hunterRow][hunterCol].setVisible(true);
+
+
+>>>>>>> GUI Stuff
+	}
+	
+	/**
+	 * Creates a map of a certain size, places a wumpus, a pit,
+	 * and a hunter in specified locations.
+	 * @param rows The number of rows on the map
+	 * @param cols The number of columns on the map
+	 * @param wumpusLoc location of wumpus
+	 * @param pitLoc location of pit
+	 * @param hunterLoc location of hunter
+	 */
+	public Map(int rows, int cols, int wumpusLoc, int pitLoc,int hunterLoc) 
+	{
+		isPlaying = true;
+		this.ROWS = rows;
+		this.COLS = cols;
 
 		rooms = new Room[ROWS][COLS];
 		for (int r = 0; r < rooms.length; r++) {
@@ -117,11 +191,14 @@ public class Map {
 		hunter = new Hunter(hunterRow,hunterCol);
 		hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
 		rooms[hunterRow][hunterCol].setVisible(true);
-
-
+		      
+		
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> GUI Stuff
 	/**
 	 * This method will place the pit at the given location.
 	 * It will also put slime in the adjacent rooms.
@@ -135,6 +212,17 @@ public class Map {
 		//Get absolute location
 		int pitX = pitLocation/COLS;
 		int pitY = pitLocation%COLS;
+<<<<<<< HEAD
+		
+		//Places the pit
+		rooms[pitX][pitY].setCondition(Condition.PIT);
+		
+		//Places slime in the adjacent pits
+		rooms[(pitX + 1) % ROWS][pitY].setCondition(Condition.SLIME);
+		rooms[(pitX + ROWS - 1) % ROWS][pitY].setCondition(Condition.SLIME);
+		rooms[pitX][(pitY + 1) % COLS].setCondition(Condition.SLIME);
+		rooms[pitX][(pitY + COLS - 1) % COLS].setCondition(Condition.SLIME);
+=======
 
 		//Places the pit
 		rooms[pitX][pitY].setCondition(Condition.PIT);
@@ -146,6 +234,7 @@ public class Map {
 			rooms[pitX][(pitY + i + 1) % COLS].setCondition(Condition.SLIME);
 			rooms[pitX][(pitY + COLS - i - 1) % COLS].setCondition(Condition.SLIME);
 		}
+>>>>>>> GUI Stuff
 	}
 
 	/**
@@ -159,6 +248,19 @@ public class Map {
 	 */
 	private void placeWumpus(int wumpusLocation) {
 		//Get absolute location
+<<<<<<< HEAD
+		int pitX = wumpusLocation/COLS;
+		int pitY = wumpusLocation%COLS;
+		
+		//Places Wumpus
+		rooms[pitX][pitY].setCondition(Condition.WUMPUS);
+		
+		//Place blood in adjacent rooms
+		rooms[(pitX + 1) % ROWS][pitY].setCondition(Condition.BLOOD);
+		rooms[(pitX + ROWS - 1) % ROWS][pitY].setCondition(Condition.BLOOD);
+		rooms[pitX][(pitY + 1) % COLS].setCondition(Condition.BLOOD);
+		rooms[pitX][(pitY + COLS - 1) % COLS].setCondition(Condition.BLOOD);
+=======
 		int wumpusX = wumpusLocation/COLS;
 		int wumpusY = wumpusLocation%COLS;
 
@@ -172,6 +274,7 @@ public class Map {
 			rooms[wumpusX][(wumpusY + i + 1) % COLS].setCondition(Condition.BLOOD);
 			rooms[wumpusX][(wumpusY + COLS - i - 1) % COLS].setCondition(Condition.BLOOD);
 		}
+>>>>>>> GUI Stuff
 	}
 
 	/**
@@ -183,8 +286,11 @@ public class Map {
 	 */
 	public void move(Direction dir)
 	{
+<<<<<<< HEAD
+=======
 		this.rooms[this.hunter.getXCoordinate()][this.hunter.getYCoordinate() ].setHasHunter( false );
 		
+>>>>>>> GUI Stuff
 		//Calculate new location
 		int newX = this.hunter.getXCoordinate() + dir.getDiffX();
 		int newY = this.hunter.getYCoordinate() + dir.getDiffY();
@@ -206,7 +312,11 @@ public class Map {
 		else if( newY < 0 ) {
 			newY = this.ROWS - 1;
 		}
+<<<<<<< HEAD
+		
+=======
 
+>>>>>>> GUI Stuff
 		//Move the hunter
 		hunter.setXCoordinate(newX);
 		hunter.setYCoordinate(newY);
@@ -221,12 +331,20 @@ public class Map {
 			setMapToVisible();
 		}
 	}
+<<<<<<< HEAD
+	
+	/**
+	 * Sets all rooms in the map to visible
+	 */
+	private void setMapToVisible() {
+=======
 
 	//TODO: Set back to private
 	/**
 	 * Sets all rooms in the map to visible
 	 */
 	public void setMapToVisible() {
+>>>>>>> GUI Stuff
 		for(Room[] row : rooms)
 			for(Room room: row)
 				room.setVisible(true);
@@ -302,7 +420,11 @@ public class Map {
 	{
 		return hunterStatus;
 	}
+<<<<<<< HEAD
+	
+=======
 
+>>>>>>> GUI Stuff
 	/**
 	 * Returns a string representation of map
 	 */
