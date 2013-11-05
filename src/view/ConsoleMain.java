@@ -1,4 +1,4 @@
-package view;
+package View;
 import java.util.Scanner;
 
 import model.Direction;

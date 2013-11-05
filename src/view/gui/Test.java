@@ -1,4 +1,4 @@
-package view.gui;
+package View.gui;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package test;
 
 import static org.junit.Assert.*;
@@ -177,4 +176,3 @@ public class HuntTheWumpusTests {
 		assertTrue(testMap.playing());
 	}
 }
->>>>>>> GUI Stuff
