@@ -31,6 +31,7 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 	private GenerationStrategy employedStrategy;
 	private Map gameMap;
 	private RoomView[][] graphicalView;
+	private boolean firingMode = false;
 
 	//GUI Components
 	private JMenuBar jmb;
@@ -74,6 +75,7 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 		gameMap.addObserver(this);
 		Room[][] roomsInMap = this.gameMap.getRooms();
 		this.graphicalView = new RoomView[ roomsInMap.length ][ roomsInMap[0].length ];
+		firingMode = false;
 		
 		//Initialize JPanels
 		for( int i = 0; i < this.graphicalView.length; i++ ) {
@@ -146,12 +148,17 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 		case KeyEvent.VK_D: movementDirection = Direction.RIGHT; break;
 		case KeyEvent.VK_N: 
 			gameMap.resetMap(false);
+			firingMode = false;
 			update();
 			break;
+		case KeyEvent.VK_F: firingMode = true; break;	
 		default: movementDirection = null;
+				firingMode = false;
 		}
 		
-		if( movementDirection != null ) {
+		if(firingMode && movementDirection != null)
+			this.gameMap.fireArrow(movementDirection);
+		else if( movementDirection != null ) {
 			this.gameMap.move( movementDirection );
 		}
 	}
