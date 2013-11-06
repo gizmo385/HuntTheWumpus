@@ -144,7 +144,10 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 		case KeyEvent.VK_S: movementDirection = Direction.DOWN; break;
 		case KeyEvent.VK_A: movementDirection = Direction.LEFT; break;
 		case KeyEvent.VK_D: movementDirection = Direction.RIGHT; break;
-		//TODO:case KeyEvent.VK_N: break;  make this start a new game
+		case KeyEvent.VK_N: 
+			gameMap.resetMap(false);
+			update();
+			break;
 		default: movementDirection = null;
 		}
 		
