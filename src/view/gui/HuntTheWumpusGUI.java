@@ -1,6 +1,7 @@
 package view.gui;
 
 import java.awt.GridLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -16,7 +17,7 @@ import model.GenerationStrategy;
 import model.Map;
 import model.Room;
 
-public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListener {
+public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListener, Observer {
 
 	//Serialization
 	private static final long serialVersionUID = 2671883464712322785L;
@@ -69,6 +70,7 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 		//Initialize game map
 		this.employedStrategy = strategy;
 		this.gameMap = new Map( this.employedStrategy );
+		gameMap.addObserver(this);
 		Room[][] roomsInMap = this.gameMap.getRooms();
 		this.graphicalView = new RoomView[ roomsInMap.length ][ roomsInMap[0].length ];
 		
@@ -125,12 +127,12 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 		case KeyEvent.VK_S: movementDirection = Direction.DOWN; break;
 		case KeyEvent.VK_A: movementDirection = Direction.LEFT; break;
 		case KeyEvent.VK_D: movementDirection = Direction.RIGHT; break;
+		//TODO:case KeyEvent.VK_N: break;  make this start a new game
 		default: movementDirection = null;
 		}
 		
 		if( movementDirection != null ) {
 			this.gameMap.move( movementDirection );
-			super.repaint();
 		}
 	}
 
@@ -145,6 +147,11 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 	public static void main(String[] args) {
 		HuntTheWumpusGUI htwg = new HuntTheWumpusGUI();
 		htwg.setVisible( true );
+	}
+
+	@Override
+	public void update() {
+		super.repaint();
 	}
 
 }
