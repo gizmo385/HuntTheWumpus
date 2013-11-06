@@ -16,6 +16,7 @@ import model.Direction;
 import model.GenerationStrategy;
 import model.Map;
 import model.Room;
+import view.gui.dialogs.HowToPlayDialog;
 
 public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListener, Observer {
 
@@ -98,13 +99,29 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 	 * Initializes GUI components (ignoring graphical elements)
 	 */
 	private final void initComponents() {
+		//Menu items
+		this.howToPlay = new JMenuItem( "How to Play" );
+		this.howToPlay.addActionListener( this );
 		
+		
+		//Menus
+		this.gameSettings = new JMenu( "Game Settings" );
+		
+		this.help = new JMenu( "Help" );
+		this.help.add( this.howToPlay );
+		
+		//Menu bar
+		this.jmb = new JMenuBar();
+		this.jmb.add( this.gameSettings );
+		this.jmb.add( this.help );
 	}
 
 	/**
 	 * Adds relelvent components to the GUI
 	 */
 	private final void addComponents() {
+		super.setJMenuBar( this.jmb );
+	
 		for( int i = 0; i < this.graphicalView.length; i++ ) {
 			for( int j = 0; j < this.graphicalView[0].length; j++ ) {
 				super.add( this.graphicalView[i][j] );
@@ -141,7 +158,9 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 	}
 
 	@Override public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if( e.getSource() == this.howToPlay ) {
+			HowToPlayDialog htpd = new HowToPlayDialog( this );
+		}
 	}
 
 	public static void main(String[] args) {
