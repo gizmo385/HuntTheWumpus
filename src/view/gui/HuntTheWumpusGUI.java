@@ -1,4 +1,4 @@
-package View.gui;
+package view.gui;
 
 import java.awt.GridLayout;
 
@@ -16,7 +16,7 @@ import model.Direction;
 import model.GenerationStrategy;
 import model.Map;
 import model.Room;
-import View.gui.dialogs.HowToPlayDialog;
+import view.gui.dialogs.HowToPlayDialog;
 
 public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListener, Observer {
 

@@ -1,4 +1,4 @@
-package View.gui.dialogs;
+package view.gui.dialogs;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;

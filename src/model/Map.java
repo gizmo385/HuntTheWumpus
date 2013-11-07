@@ -2,7 +2,7 @@ package model;
 
 import java.awt.Point;
 
-import View.gui.Observable;
+import view.gui.Observable;
 
 /**
  * Manages info about the game board

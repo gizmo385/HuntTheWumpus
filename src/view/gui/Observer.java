@@ -1,4 +1,4 @@
-package View.gui;
+package view.gui;
 
 /**
  * Provides an interface for the GUI to implement
