@@ -1,7 +1,6 @@
 package view.gui;
 
 import java.awt.GridLayout;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,12 +10,24 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import model.Direction;
 import model.GenerationStrategy;
 import model.Map;
 import model.Room;
 import view.gui.dialogs.HowToPlayDialog;
+
+/**
+ * Is the main GUI for Hunt the Wumpus
+ * 
+ * @author Christopher Chapline
+ * @author Christopher Toepfer
+ * @author David Christy
+ * @author James Fagan
+ */
 
 public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListener, Observer {
 
@@ -36,8 +47,17 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 	//GUI Components
 	private JMenuBar jmb;
 	private JMenu gameSettings, help;
-	private JMenuItem startNewGame, quitGame, howToPlay, credits;
+	private JMenuItem startNewGame, quitGame, howToPlay, credits, switchView;
+	
+	
+	//panels
+	private JPanel consolePanel;
+	private JPanel GuiPanel;
+	
+	//Console components
+	private JTextArea console;
 
+	
 	/**
 	 * Starts the game with a custom generation strategy
 	 * @param strategy The generation strategy to use
@@ -91,7 +111,7 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 	private final void initFrame() {
 		super.setSize( this.WIDTH, this.HEIGHT );
 		super.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		super.setLayout( new GridLayout( this.employedStrategy.getColumns(), this.employedStrategy.getRows(), 0, 0 ) );
+		super.setLayout( new GridLayout( this.employedStrategy.getColumns(), this.employedStrategy.getRows(), 0, 0) );
 		super.setResizable( false );
 		super.setLocationRelativeTo( null );
 		super.addKeyListener( this );
@@ -105,21 +125,43 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 		this.howToPlay = new JMenuItem( "How to Play" );
 		this.howToPlay.addActionListener( this );
 		
+		this.startNewGame = new JMenuItem( "New Game");
+		this.startNewGame.addActionListener( this );
+		
+		this.quitGame = new JMenuItem("Quit Game");
+		this.quitGame.addActionListener( this );
+		
+		this.credits = new JMenuItem("Credits");
+		this.credits.addActionListener( this );
+		
+		this.switchView = new JMenuItem("switch (will change)");
+		this.switchView.addActionListener( this );
+		
 		
 		//Menus
 		this.gameSettings = new JMenu( "Game Settings" );
 		
 		this.help = new JMenu( "Help" );
 		this.help.add( this.howToPlay );
+		this.gameSettings.add(this.startNewGame);
+		this.gameSettings.add(this.quitGame);
+		this.gameSettings.add(this.credits);
+		this.gameSettings.add(this.switchView);
 		
 		//Menu bar
 		this.jmb = new JMenuBar();
 		this.jmb.add( this.gameSettings );
 		this.jmb.add( this.help );
+		
+		//console
+		this.console = new JTextArea();
+		this.consolePanel = new JPanel();
+		consolePanel.add(console);
+		
 	}
 
 	/**
-	 * Adds relelvent components to the GUI
+	 * Adds relevant components to the GUI
 	 */
 	private final void addComponents() {
 		super.setJMenuBar( this.jmb );
@@ -129,6 +171,7 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 				super.add( this.graphicalView[i][j] );
 			}
 		}
+		
 	}
 
 	
@@ -168,9 +211,25 @@ public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListe
 	}
 
 	@Override public void actionPerformed(ActionEvent e) {
-		if( e.getSource() == this.howToPlay ) {
+		Object source = e.getSource();
+		if( source == this.howToPlay ) {
 			HowToPlayDialog htpd = new HowToPlayDialog( this );
 		}
+		else if (source == this.startNewGame){
+			gameMap.resetMap(false);
+			update();
+		}
+		else if (source == this.quitGame){
+			System.exit(0);
+		}
+		else if (source == this.credits){
+			JOptionPane.showMessageDialog(credits,
+					"All these people did stuff!\nChristopher Chapline\nChristopher Toepfer\nDavid Christy\nJames Fagan");
+		}
+		else if (source == this.switchView){
+			//here is where the code goes for switch between text and GUI
+		}
+		
 	}
 
 	public static void main(String[] args) {
