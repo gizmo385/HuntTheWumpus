@@ -1,245 +1,384 @@
-package view.gui;
+package model;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.Point;
 
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-
-import model.Direction;
-import model.GenerationStrategy;
-import model.Map;
-import model.Room;
-import view.gui.dialogs.HowToPlayDialog;
+import view.gui.Observable;
 
 /**
- * Is the main GUI for Hunt the Wumpus
+ * Manages info about the game board
  * 
  * @author Christopher Chapline
  * @author Christopher Toepfer
  * @author David Christy
  * @author James Fagan
  */
+public class Map extends Observable{
+        private Room[][] rooms;
+        private Hunter hunter;
+        private String hunterStatus;
+        private boolean isPlaying;
 
-public class HuntTheWumpusGUI extends JFrame implements ActionListener, KeyListener, Observer {
+        private final int ROWS;
+        private final int COLS;
+        private int numberOfPits, slimeSpread, bloodSpread;
 
-	//Serialization
-	private static final long serialVersionUID = 2671883464712322785L;
-	
-	//Frame settings
-	private final int WIDTH;
-	private final int HEIGHT;
+        /**
+         * Creates a map of a certain size, places a wumpus and pit in random 
+         * locations, and then places the player in a safe square
+         * @param rows The number of rows on the map
+         * @param cols The number of columns on the map
+         */
+        public Map( GenerationStrategy strategy ) {
+            //Set gameplay variables
+            isPlaying = true;
+            this.ROWS = strategy.getRows();
+            this.COLS = strategy.getColumns();
+            this.numberOfPits = strategy.getNumberOfPits();
+            this.slimeSpread = strategy.getSlimeSpreadDistance();
+            this.bloodSpread = strategy.getBloodSpreadDistance();
 
-	//Game elements
-	private GenerationStrategy employedStrategy;
-	private Map gameMap;
-	private RoomView[][] graphicalView;
-	private boolean firingMode = false;
+          //Initialize all Rooms
+            rooms = new Room[ROWS][COLS];
+            for (int r = 0; r < rooms.length; r++) {
+                    for (int c = 0; c < rooms[0].length; c++) {
+                            rooms[r][c] = new Room();
+                    }
+            }
+            
+            resetMap(true);
+        }
 
-	//GUI Components
-	private JMenuBar jmb;
-	private JMenu gameSettings, help;
-	private JMenuItem startNewGame, quitGame, howToPlay, credits, switchView;
-	
-	
-	//panels
-	private JPanel consolePanel;
-	private JPanel GuiPanel;
-	
-	//Console components
-	private JTextArea console;
+        /**
+         * Creates a map of a certain size, places a wumpus, a pit,
+         * and a hunter in specified locations.
+         * @param rows The number of rows on the map
+         * @param cols The number of columns on the map
+         * @param wumpusLoc location of wumpus
+         * @param pitLoc location of pit
+         * @param hunterLoc location of hunter
+         */
+        public Map(int rows, int cols, int wumpusLoc, int pitLoc,int hunterLoc) 
+        {
+                isPlaying = true;
+                this.ROWS = rows;
+                this.COLS = cols;
+                this.bloodSpread = 1;
+                this.slimeSpread = 1;
+                this.numberOfPits = 1;
 
-	
-	/**
-	 * Starts the game with a custom generation strategy
-	 * @param strategy The generation strategy to use
-	 */
-	public HuntTheWumpusGUI( GenerationStrategy strategy ) {
-		//Call superconstructor
-		super( "Hunt the Wumpus" );
-		
-		//Set height and width
-		this.WIDTH = strategy.getColumns() * 50;
-		this.HEIGHT = strategy.getRows() * 50;
-		
-		//Call initialization methods
-		initGameElements( strategy );
-		initFrame();
-		initComponents();
-		addComponents();
-	}
-	
-	/**
-	 * Starts the game with the default generation strategy
-	 */
-	public HuntTheWumpusGUI() {
-		this( new GenerationStrategy( 3, 1, 3, 15, 15 ) );
-	}
+                rooms = new Room[ROWS][COLS];
+                for (int r = 0; r < rooms.length; r++) {
+                        for (int c = 0; c < rooms[0].length; c++) {
+                                rooms[r][c] = new Room();
+                        }
+                }
 
-	/**
-	 * Initializes GUI elements
-	 * @param strategy The GenerationStrategy used to generate gameplay
-	 */
-	private final void initGameElements( GenerationStrategy strategy ) {
-		//Initialize game map
-		this.employedStrategy = strategy;
-		this.gameMap = new Map( this.employedStrategy );
-		gameMap.addObserver(this);
-		Room[][] roomsInMap = this.gameMap.getRooms();
-		this.graphicalView = new RoomView[ roomsInMap.length ][ roomsInMap[0].length ];
-		firingMode = false;
-		
-		//Initialize JPanels
-		for( int i = 0; i < this.graphicalView.length; i++ ) {
-			for( int j = 0; j < this.graphicalView[0].length; j++ ) {
-				this.graphicalView[i][j] = new RoomView( roomsInMap[i][j] );
-			}
-		}
-	}
+                this.placeWumpus(wumpusLoc);
+                this.placePit(pitLoc);
 
-	/**
-	 * Initializes frame settings
-	 */
-	private final void initFrame() {
-		super.setSize( this.WIDTH, this.HEIGHT );
-		super.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		super.setLayout( new GridLayout( this.employedStrategy.getColumns(), this.employedStrategy.getRows(), 0, 0) );
-		super.setResizable( false );
-		super.setLocationRelativeTo( null );
-		super.addKeyListener( this );
-	}
+                int hunterRow = hunterLoc/cols;
+                int hunterCol = hunterLoc%cols;
+                hunter = new Hunter(hunterRow,hunterCol);
+                hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
+                rooms[hunterRow][hunterCol].setVisible(true);
 
-	/**
-	 * Initializes GUI components (ignoring graphical elements)
-	 */
-	private final void initComponents() {
-		//Menu items
-		this.howToPlay = new JMenuItem( "How to Play" );
-		this.howToPlay.addActionListener( this );
-		
-		this.startNewGame = new JMenuItem( "New Game");
-		this.startNewGame.addActionListener( this );
-		
-		this.quitGame = new JMenuItem("Quit Game");
-		this.quitGame.addActionListener( this );
-		
-		this.credits = new JMenuItem("Credits");
-		this.credits.addActionListener( this );
-		
-		this.switchView = new JMenuItem("switch (will change)");
-		this.switchView.addActionListener( this );
-		
-		
-		//Menus
-		this.gameSettings = new JMenu( "Game Settings" );
-		
-		this.help = new JMenu( "Help" );
-		this.help.add( this.howToPlay );
-		this.gameSettings.add(this.startNewGame);
-		this.gameSettings.add(this.quitGame);
-		this.gameSettings.add(this.credits);
-		this.gameSettings.add(this.switchView);
-		
-		//Menu bar
-		this.jmb = new JMenuBar();
-		this.jmb.add( this.gameSettings );
-		this.jmb.add( this.help );
-		
-		//console
-		this.console = new JTextArea();
-		this.consolePanel = new JPanel();
-		consolePanel.add(console);
-		
-	}
 
-	/**
-	 * Adds relevant components to the GUI
-	 */
-	private final void addComponents() {
-		super.setJMenuBar( this.jmb );
-	
-		for( int i = 0; i < this.graphicalView.length; i++ ) {
-			for( int j = 0; j < this.graphicalView[0].length; j++ ) {
-				super.add( this.graphicalView[i][j] );
-			}
-		}
-		
-	}
+        }
 
-	
-	@Override public void keyPressed(KeyEvent arg0) {
-		//NOTHING
-	}
 
-	
-	@Override public void keyReleased(KeyEvent arg0) {
-		System.out.println( "Key Released: " + arg0.getKeyChar() );
-		int keyCode = arg0.getKeyCode();
-		Direction movementDirection = null;
-		switch( keyCode ) {
-		case KeyEvent.VK_W: movementDirection = Direction.UP; break;
-		case KeyEvent.VK_S: movementDirection = Direction.DOWN; break;
-		case KeyEvent.VK_A: movementDirection = Direction.LEFT; break;
-		case KeyEvent.VK_D: movementDirection = Direction.RIGHT; break;
-		case KeyEvent.VK_N: 
-			gameMap.resetMap(false);
-			firingMode = false;
-			update();
-			break;
-		case KeyEvent.VK_F: firingMode = true; break;	
-		default: movementDirection = null;
-				firingMode = false;
-		}
-		
-		if(firingMode && movementDirection != null)
-			this.gameMap.fireArrow(movementDirection);
-		else if( movementDirection != null ) {
-			this.gameMap.move( movementDirection );
-		}
-	}
+        /**
+         * This method will place the pit at the given location.
+         * It will also put slime in the adjacent rooms.
+         * The row value is the location divided by the number
+         * of columns, and the col value is the location
+         * mod the number of columns.
+         * 
+         * @param The location of the pit to place
+         */
+        private void placePit(int pitLocation) {
+                //Get absolute location
+                int pitX = pitLocation/COLS;
+                int pitY = pitLocation%COLS;
 
-	@Override public void keyTyped(KeyEvent arg0) {
-		//NOTHING
-	}
+                //Places the pit
+                rooms[pitX][pitY].setCondition(Condition.PIT);
 
-	@Override public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if( source == this.howToPlay ) {
-			HowToPlayDialog htpd = new HowToPlayDialog( this );
-		}
-		else if (source == this.startNewGame){
-			gameMap.resetMap(false);
-			update();
-		}
-		else if (source == this.quitGame){
-			System.exit(0);
-		}
-		else if (source == this.credits){
-			JOptionPane.showMessageDialog(credits,
-					"All these people did stuff!\nChristopher Chapline\nChristopher Toepfer\nDavid Christy\nJames Fagan");
-		}
-		else if (source == this.switchView){
-			//here is where the code goes for switch between text and GUI
-		}
-		
-	}
+                for( int i = 0; i < this.slimeSpread; i++ ) {
+                        //Places slime in the adjacent pits
+                        rooms[(pitX + i + 1) % ROWS][pitY].setCondition(Condition.SLIME);
+                        rooms[(pitX + ROWS - i - 1) % ROWS][pitY].setCondition(Condition.SLIME);
+                        rooms[pitX][(pitY + i + 1) % COLS].setCondition(Condition.SLIME);
+                        rooms[pitX][(pitY + COLS - i - 1) % COLS].setCondition(Condition.SLIME);
+                }
+        }
 
-	public static void main(String[] args) {
-		HuntTheWumpusGUI htwg = new HuntTheWumpusGUI();
-		htwg.setVisible( true );
-	}
+        /**
+         * This method will place the wumpus at the given location.
+         * It will also put blood in the adjacent rooms.
+         * The row value is the location divided by the number
+         * of columns, and the col value is the location
+         * mod the number of columns.
+         * 
+         * @param The location of the wumpus to place
+         */
+        private void placeWumpus(int wumpusLocation) {
+                //Get absolute location
+                int wumpusX = wumpusLocation/COLS;
+                int wumpusY = wumpusLocation%COLS;
 
-	@Override
-	public void update() {
-		super.repaint();
-	}
+                //Places Wumpus
+                rooms[wumpusX][wumpusY].setCondition(Condition.WUMPUS);
 
+                for( int i = 0; i < this.bloodSpread; i++ ) {
+                        //Place blood in adjacent rooms
+                        spreadBlood((wumpusX + 1) % ROWS,wumpusY,bloodSpread - 1);
+                    spreadBlood((wumpusX + ROWS- 1) % ROWS,wumpusY, bloodSpread - 1);
+                    spreadBlood(wumpusX,(wumpusY + 1) % COLS, bloodSpread - 1);
+                    spreadBlood(wumpusX,(wumpusY + COLS - 1) % COLS, bloodSpread - 1);
+                }
+        }
+        
+        private void spreadBlood(int x, int y, int spread)
+        {
+                rooms[x][y].setCondition(Condition.BLOOD);
+                if(spread > 0)
+                {
+                        spreadBlood((x + 1) % ROWS,y,spread - 1);
+                spreadBlood((x + ROWS- 1) % ROWS,y, spread - 1);
+                spreadBlood(x,(y + 1) % COLS, spread - 1);
+                spreadBlood(x,(y + COLS - 1) % COLS, spread - 1);
+                }        
+        }
+
+        /**
+         * Depending on the value of dir, this method
+         * moves the hunter to a room adjacent to its current
+         * room. It updates the Hunter object as well.
+         * 
+         * @param dir The direction for the player to move in
+         */
+        public void move(Direction dir)
+        {
+                if(!isPlaying)
+                        return;
+                
+                this.rooms[this.hunter.getXCoordinate()][this.hunter.getYCoordinate() ].setHasHunter( false );
+                
+                //Calculate new location
+                int newX = this.hunter.getXCoordinate() + dir.getDiffX();
+                int newY = this.hunter.getYCoordinate() + dir.getDiffY();
+
+                //Verify valid X location
+                if( newX >= this.COLS ) {
+                        newX = 0;
+                }
+
+                else if( newX < 0 ) {
+                        newX = this.COLS - 1;
+                }
+
+                //Verify valid Y location
+                if( newY >= this.ROWS ) {
+                        newY = 0;
+                }
+
+                else if( newY < 0 ) {
+                        newY = this.ROWS - 1;
+                }
+
+                //Move the hunter
+                hunter.setXCoordinate(newX);
+                hunter.setYCoordinate(newY);
+                rooms[newX][newY].setVisible(true);
+                rooms[newX][newY].setHasHunter(true);
+                hunterStatus = rooms[newX][newY].getCondition().getStatus();
+                
+                //Check end of game conditions
+                if (rooms[newX][newY].getCondition() == Condition.WUMPUS || rooms[newX][newY].getCondition() == Condition.PIT)
+                {        
+                        isPlaying = false;
+                        setMapToVisible();
+                }
+                
+                notifyObservers();
+        }
+
+        //TODO: Set back to private
+        /**
+         * Sets all rooms in the map to visible
+         */
+        public void setMapToVisible() {
+                for(Room[] row : rooms)
+                        for(Room room: row)
+                                room.setVisible(true);
+        }
+
+
+        /**
+         * Fires an arrow in the specified direction
+         * 
+         * @param dir The direction to fire in 
+         * @see #fire(Direction)
+         */
+        public void fireArrow(Direction dir)
+        {
+                boolean successfulShot = fire(dir);
+                if(successfulShot)
+                        hunterStatus = "You killed the Wumpus! You are a true hero!";
+                else
+                        hunterStatus = "You missed and the Wumpus heard you. You were eaten.";
+                isPlaying = false;
+                setMapToVisible();
+                notifyObservers();
+        }
+
+        /** 
+         * 
+         * This function retrieves the coordinates of the hunter
+         * and fires an arrow given it's position from the hunter
+         * and travels until it hits a wall (edges of map)
+         * 
+         * @param dir The direction to fire in
+         * @return Returns true if the wumpus was killed, false otherwise.
+         */
+        private boolean fire(Direction dir) {
+                int xCoord = hunter.getXCoordinate();
+                int yCoord = hunter.getYCoordinate();
+
+                switch(dir) {
+                case RIGHT:
+                        for(int i=yCoord; i < COLS; i++) 
+                                if(rooms[xCoord][i].hasWumpus())
+                                        return true;
+                        break;
+
+                case DOWN:
+                        for(int i=xCoord; i < ROWS; i++) 
+                                if(rooms[i][yCoord].hasWumpus())
+                                        return true;
+                        break;
+
+                case LEFT:
+                        for(int i=yCoord; i > 0; i--) 
+                                if(rooms[xCoord][i].hasWumpus())
+                                        return true;
+                        break;
+
+                case UP:
+                        for(int i=xCoord; i > 0; i--) 
+                                if(rooms[i][yCoord].hasWumpus())
+                                        return true;
+                        break;
+
+                default:
+                        break;
+                }
+                return false;
+        }
+
+        /**
+         * Returns the status of the hunter, which is a description of
+         * the hunter's current situation.
+         */
+        public String getStatus()
+        {
+                return hunterStatus;
+        }
+
+        /**
+         * Returns a string representation of map
+         */
+        public String toString() {
+                String lineSep = System.lineSeparator();
+                StringBuilder sb = new StringBuilder();
+
+                for (int r = 0; r < rooms.length; r++) {
+                        for (int c = 0; c < rooms[0].length; c++) {
+                                if(r == hunter.getXCoordinate() && c == hunter.getYCoordinate())
+                                        sb.append( "[O]" );
+                                else
+                                        sb.append( rooms[r][c].toString() );
+                        }
+                        sb.append( lineSep );
+                }
+                return sb.toString();
+        }
+
+        /**
+         * @return True while the game is still being played
+         */
+        public boolean playing() {
+                return isPlaying;
+        }
+        
+        /**
+         * @return The current location of the hunter
+         */
+        public Point getHunterLocation() {
+                Point p = new Point( this.hunter.getXCoordinate(), this.hunter.getYCoordinate() );
+                return p;
+        }
+
+        /**
+         * @return The current map
+         */
+        public Room[][] getRooms() {
+                return rooms;
+        }
+
+        public void resetMap(boolean firstTime)
+        {
+                isPlaying = true;
+                
+                if(!firstTime)
+                {
+                        
+                for (int r = 0; r < rooms.length; r++) {
+                        for (int c = 0; c < rooms[0].length; c++) {
+                                rooms[r][c].reset();
+                        }
+                }
+                }
+            
+
+            //Place wumpus
+            int wumpusLocation = (int) (Math.random() * this.ROWS * this.COLS);
+            this.placeWumpus(wumpusLocation);
+
+            //Place pits
+            for( int i = 0; i < this.numberOfPits; i++ ) {
+                    boolean successfulPitPlacement = false;
+                    
+                    do {
+                            //Generate random location
+                            int pitLocation = (int) (Math.random() * this.ROWS * this.COLS);
+                            
+                            //Get absolute location
+                            int pitX = pitLocation / COLS;
+                            int pitY = pitLocation % COLS;
+                            
+                            //Test location
+                            if (this.rooms[pitX][pitY].isEmpty()) {
+                                    placePit(pitLocation);
+                                    successfulPitPlacement = true;
+                            }
+                    } while (!successfulPitPlacement);
+            }
+
+            //Place the hunter in a safe location
+            while(true)
+            {        
+                    int hunterLocation = (int) (Math.random() * this.ROWS * this.COLS);
+                    int hunterRow = hunterLocation/this.COLS;
+                    int hunterCol = hunterLocation%this.COLS;
+                    if(rooms[hunterRow][hunterCol].isEmpty())
+                    {
+                            hunter = new Hunter(hunterRow,hunterCol);
+                            hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
+                            rooms[hunterRow][hunterCol].setVisible(true);
+                            rooms[hunterRow][hunterCol].setHasHunter(true);
+                            break;
+                    }        
+            }
+        }
 }
