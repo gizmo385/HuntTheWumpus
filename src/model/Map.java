@@ -226,7 +226,7 @@ public class Map extends Observable{
                 if(successfulShot)
                         hunterStatus = "You killed the Wumpus! You are a true hero!";
                 else
-                        hunterStatus = "You missed with your one and only arrow and the Wumpus heard you. You were eaten.";
+                        hunterStatus = "You missed and the Wumpus heard you. You were eaten.";
                 isPlaying = false;
                 setMapToVisible();
                 notifyObservers();
