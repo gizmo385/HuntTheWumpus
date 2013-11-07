@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package test;
 
 import static org.junit.Assert.*;
@@ -86,6 +87,8 @@ public class HuntTheWumpusTests {
 	}
 }
 =======
+=======
+>>>>>>> b8d9f0029143cb827792bc4dcdd72da41f4e65b4
 package test;
 
 import static org.junit.Assert.assertEquals;

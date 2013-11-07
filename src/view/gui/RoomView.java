@@ -32,7 +32,6 @@ public class RoomView extends JPanel {
 		super.setVisible( true );
 		this.room = room;
 		
-		System.out.println( this.imageLoadLocation );
 	}
 	
 	/**

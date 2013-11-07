@@ -2,6 +2,8 @@ package model;
 
 import java.awt.Point;
 
+import View.gui.Observable;
+
 /**
  * Manages info about the game board
  * 
@@ -10,7 +12,7 @@ import java.awt.Point;
  * @author David Christy
  * @author James Fagan
  */
-public class Map {
+public class Map extends Observable{
         private Room[][] rooms;
         private Hunter hunter;
         private String hunterStatus;
@@ -27,61 +29,23 @@ public class Map {
          * @param cols The number of columns on the map
          */
         public Map( GenerationStrategy strategy ) {
-                //Set gameplay variables
-                isPlaying = true;
-                this.ROWS = strategy.getRows();
-                this.COLS = strategy.getColumns();
-                this.numberOfPits = strategy.getNumberOfPits();
-                this.slimeSpread = strategy.getSlimeSpreadDistance();
-                this.bloodSpread = strategy.getBloodSpreadDistance();
+            //Set gameplay variables
+            isPlaying = true;
+            this.ROWS = strategy.getRows();
+            this.COLS = strategy.getColumns();
+            this.numberOfPits = strategy.getNumberOfPits();
+            this.slimeSpread = strategy.getSlimeSpreadDistance();
+            this.bloodSpread = strategy.getBloodSpreadDistance();
 
-                //Initialize all Rooms
-                rooms = new Room[ROWS][COLS];
-                for (int r = 0; r < rooms.length; r++) {
-                        for (int c = 0; c < rooms[0].length; c++) {
-                                rooms[r][c] = new Room();
-                        }
-                }
-
-                //Place wumpus
-                int wumpusLocation = (int) (Math.random() * this.ROWS * this.COLS);
-                this.placeWumpus(wumpusLocation);
-
-                //Place pits
-                for( int i = 0; i < this.numberOfPits; i++ ) {
-                        boolean successfulPitPlacement = false;
-                        
-                        do {
-                                //Generate random location
-                                int pitLocation = (int) (Math.random() * this.ROWS * this.COLS);
-                                
-                                //Get absolute location
-                                int pitX = pitLocation / COLS;
-                                int pitY = pitLocation % COLS;
-                                
-                                //Test location
-                                if (this.rooms[pitX][pitY].isEmpty()) {
-                                        placePit(pitLocation);
-                                        successfulPitPlacement = true;
-                                }
-                        } while (!successfulPitPlacement);
-                }
-
-                //Place the hunter in a safe location
-                while(true)
-                {        
-                        int hunterLocation = (int) (Math.random() * this.ROWS * this.COLS);
-                        int hunterRow = hunterLocation/this.COLS;
-                        int hunterCol = hunterLocation%this.COLS;
-                        if(rooms[hunterRow][hunterCol].isEmpty())
-                        {
-                                hunter = new Hunter(hunterRow,hunterCol);
-                                hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
-                                rooms[hunterRow][hunterCol].setVisible(true);
-                                rooms[hunterRow][hunterCol].setHasHunter(true);
-                                break;
-                        }        
-                }
+          //Initialize all Rooms
+            rooms = new Room[ROWS][COLS];
+            for (int r = 0; r < rooms.length; r++) {
+                    for (int c = 0; c < rooms[0].length; c++) {
+                            rooms[r][c] = new Room();
+                    }
+            }
+            
+            resetMap(true);
         }
 
         /**
@@ -167,11 +131,23 @@ public class Map {
 
                 for( int i = 0; i < this.bloodSpread; i++ ) {
                         //Place blood in adjacent rooms
-                        rooms[(wumpusX + i + 1) % ROWS][wumpusY].setCondition(Condition.BLOOD);
-                        rooms[(wumpusX + ROWS - i - 1) % ROWS][wumpusY].setCondition(Condition.BLOOD);
-                        rooms[wumpusX][(wumpusY + i + 1) % COLS].setCondition(Condition.BLOOD);
-                        rooms[wumpusX][(wumpusY + COLS - i - 1) % COLS].setCondition(Condition.BLOOD);
+                        spreadBlood((wumpusX + 1) % ROWS,wumpusY,bloodSpread - 1);
+                    spreadBlood((wumpusX + ROWS- 1) % ROWS,wumpusY, bloodSpread - 1);
+                    spreadBlood(wumpusX,(wumpusY + 1) % COLS, bloodSpread - 1);
+                    spreadBlood(wumpusX,(wumpusY + COLS - 1) % COLS, bloodSpread - 1);
                 }
+        }
+        
+        private void spreadBlood(int x, int y, int spread)
+        {
+                rooms[x][y].setCondition(Condition.BLOOD);
+                if(spread > 0)
+                {
+                        spreadBlood((x + 1) % ROWS,y,spread - 1);
+                spreadBlood((x + ROWS- 1) % ROWS,y, spread - 1);
+                spreadBlood(x,(y + 1) % COLS, spread - 1);
+                spreadBlood(x,(y + COLS - 1) % COLS, spread - 1);
+                }        
         }
 
         /**
@@ -183,6 +159,9 @@ public class Map {
          */
         public void move(Direction dir)
         {
+                if(!isPlaying)
+                        return;
+                
                 this.rooms[this.hunter.getXCoordinate()][this.hunter.getYCoordinate() ].setHasHunter( false );
                 
                 //Calculate new location
@@ -220,6 +199,8 @@ public class Map {
                         isPlaying = false;
                         setMapToVisible();
                 }
+                
+                notifyObservers();
         }
 
         //TODO: Set back to private
@@ -248,6 +229,7 @@ public class Map {
                         hunterStatus = "You missed with your one and only arrow and the Wumpus heard you. You were eaten.";
                 isPlaying = false;
                 setMapToVisible();
+                notifyObservers();
         }
 
         /** 
@@ -344,5 +326,59 @@ public class Map {
                 return rooms;
         }
 
+        public void resetMap(boolean firstTime)
+        {
+                isPlaying = true;
+                
+                if(!firstTime)
+                {
+                        
+                for (int r = 0; r < rooms.length; r++) {
+                        for (int c = 0; c < rooms[0].length; c++) {
+                                rooms[r][c].reset();
+                        }
+                }
+                }
+            
 
+            //Place wumpus
+            int wumpusLocation = (int) (Math.random() * this.ROWS * this.COLS);
+            this.placeWumpus(wumpusLocation);
+
+            //Place pits
+            for( int i = 0; i < this.numberOfPits; i++ ) {
+                    boolean successfulPitPlacement = false;
+                    
+                    do {
+                            //Generate random location
+                            int pitLocation = (int) (Math.random() * this.ROWS * this.COLS);
+                            
+                            //Get absolute location
+                            int pitX = pitLocation / COLS;
+                            int pitY = pitLocation % COLS;
+                            
+                            //Test location
+                            if (this.rooms[pitX][pitY].isEmpty()) {
+                                    placePit(pitLocation);
+                                    successfulPitPlacement = true;
+                            }
+                    } while (!successfulPitPlacement);
+            }
+
+            //Place the hunter in a safe location
+            while(true)
+            {        
+                    int hunterLocation = (int) (Math.random() * this.ROWS * this.COLS);
+                    int hunterRow = hunterLocation/this.COLS;
+                    int hunterCol = hunterLocation%this.COLS;
+                    if(rooms[hunterRow][hunterCol].isEmpty())
+                    {
+                            hunter = new Hunter(hunterRow,hunterCol);
+                            hunterStatus = rooms[hunterRow][hunterCol].getCondition().getStatus();
+                            rooms[hunterRow][hunterCol].setVisible(true);
+                            rooms[hunterRow][hunterCol].setHasHunter(true);
+                            break;
+                    }        
+            }
+        }
 }

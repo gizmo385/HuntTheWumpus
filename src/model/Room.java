@@ -98,5 +98,14 @@ public class Room {
 		this.hasHunter = hasHunter;
 	}
 
+	/**
+	 * resets the room
+	 */
+	public void reset()
+	{
+		this.condition = Condition.EMPTY;
+		this.hasHunter = false;
+		this.isVisible = false;
+	}
 }
 
